@@ -133,7 +133,7 @@ The Domain layer
 
 [.notes]
 --
-* Deeper explanation
+* Deeper explanation???
 --
 
 
@@ -150,6 +150,8 @@ image::model_t_production.png[Ford Model T Production Line, 400, 250]
 An entity represents a single instance of a model identified with an _id_. Two entities can have all the exact same attributes, distinguishable only by their id.
 
 == !
+image::model_t_production.png[Ford Model T Production Line, 400, 250]
+
 For #all# intents and purposes, one Model T is no different from any other except for the serial number.
 
 == Value Objects
@@ -231,16 +233,15 @@ An example could be summing the hours over a given time period.
 --
 
 == Conclusions
-* I did not develop from an actual DDD analysis and design
-** Translation feels like it would be better aligned if so
-* Segregating into defined layers
-** Clarified focus achieves cohesion and coupling
-** Revisited layer definitions frequently
-** Stronger understanding of DDD would likely improve results
-* There seemed to be a lot of conflicting information on the web.
+* Should improve communication with end users, analysts, architects, etc.
+* Great separation of concerns, improved cohesion and coupling
+* Developing from an actual DDD analysis and design might have lead to better alignment
+* Revisited layer definitions frequently
+* There seemed to be a lot of conflicting information on the web
 
 [.notes]
 --
+* Better understanding of DDD would likely improve results
 * I would like to discuss with people that are more expert
 * The app will likely be further expanded
 --
@@ -292,19 +293,20 @@ Feedback and questions???
 [cols="1,1"]
 |===
 |This presentation
-|
+|https://github.com/wltiii/flutter_ddd_organization
 
-|The Flutter/Dart demo DDD project1
+|The Flutter/Dart demo DDD project
 |https://github.com/wltiii/time_tracker
 
 |A Java demo DDD project
 |https://github.com/wltiii/shopping_cart_demo
 
-|YouTube
-|Many other good ones from _NDC Conferences_, _GOTO Conferences_ and book authors
 
 |YouTube
 |Domain Driven Design Europe
+
+|YouTube
+|Many other good ones from _NDC Conferences_, _GOTO Conferences_ and book authors
 |===
 
 == Discussion questions
