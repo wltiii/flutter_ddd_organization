@@ -1,0 +1,341 @@
+= Domain Driven Design Structure:  In Flutter and Dart
+Version 0.1, 04/03/2023
+
+:description: Presentation of Organizing Flutter Applications Using Domain Driven Design Principles
+:authors: Bill Turner (c)
+:imagesdir: ./images
+:icons: font
+
+== Introduction
+[quote,Gee Paw Hill (as attributed by Ron Jeffries)]
+I’m in the business of changing code
+
+* The requirement/design/implementation dissonance is a curse.
+* Building applications with a clean, maintainable and extensible architecture is one method for reducing the disconnect.
+
+== A Simple Time Tracking Project
+[.notes]
+--
+* Demonstrate the app
+--
+* It allows you to start and stop a timer.
+* Displays a list of entries.
+* If a timer is running, you are not allowed to start another.
+* Conversely, if a timer is not running, you can only start one.
+
+== Resocoder's DDD YouTube Video
+* A good introduction to DDD project structure.
+
+[.notes]
+--
+* Mine differs in some ways, chiefly in the enforcement of the invariants.
+* My approach to making invalid state unrepresentable differs.
+* This presentation covers DDD
+concepts more deeply, I believe, though I watched his video long ago.
+--
+
+== My Domain Driven Design Background
+[.notes]
+--
+* people state that they really didn't understand DDD until they read the blue book at least three times.
+* I don't proclaim to be an expert.
+--
+* I have not used these concepts in a professional project .
+* I have read both the blue and red books, in addition to having read others and watching multiple videos.
+
+== Key DDD Concepts Applying To Code
+* Naming stemming from the *Ubiquitous Language*
+* Invariants managed in domains (DDD says *Aggregate Root*)
+* High cohesion and minimal coupling via well-defined layers
+
+== Layers
+[quote,Eric Evans,Domain-Driven Design]
+...we need to be able to look at the elements of our model and see them as a system. We must not be forced to pick them out of a much larger mix of objects...
+
+== Four Layers
+* Presentation (aka User Interface)
+* Infrastructure
+* Application
+* Domain
+
+[.notes]
+--
+* Show project structure in IDE
+--
+
+== The Presentation Layer
+[quote,Eric Evans,Domain-Driven Design]
+Responsible for showing information to the user and interpreting the user's commands.
+
+== !
+
+Presentation (aka User Interface) layer examples:
+
+. A User Interface
+. A REST API
+
+* Depends on the application layer, but not the other way around.
+* Should be isolated from the technical details of the implementation, such as data access and external services.
+
+[.notes]
+--
+* Show in IDE
+--
+
+== The Infrastructure Layer
+[quote,Eric Evans,Domain-Driven Design]
+Provides generic technical capabilities that support higher layers: message sending for the application, persistence for the domain...
+
+== !
+Infrastructure layer examples:
+
+* Services calling REST api's or cloud services.
+* Services for storing/retrieving data in a database.
+* Depends on the *domain layer*.
+
+[.notes]
+--
+* Show in IDE
+* How does it depend on the domain layer???
+--
+
+== The Application Layer
+[quote,Eric Evans,Domain-Driven Design]
+Defines the jobs the software is supposed to do...The layer is kept thin. It does not contain business rules or knowledge, but only coordinates tasks...
+
+== !
+The Application layer
+
+* Takes requests from the presentation layer and dispatches to the *infrastructure layer* as appropriate.
+* Depends on the domain layer.
+* Uses abstractions (interfaces or abstract classes) to maintain loose coupling with the *infrastructure layer*.
+
+[.notes]
+--
+* Show in IDE
+* These amount to usecases
+--
+
+== The Domain Layer
+[quote,Eric Evans,Domain-Driven Design]
+Responsible for representing concepts or the business, information about the business situation, and business rules... *This layer is the heart of business software.*
+
+== !
+[quote,Eric Evans,Domain-Driven Design]
+Concentrate all the code related to the domain model in one layer and isolate it from the user interface, application and infrastructure code. *The domain objects, free of the responsibility of displaying themselves, storing themselves, managing application tasks, and so forth, can be focused on expressing the domain model.*
+
+== !
+The Domain layer
+
+* Must be independent of the user interface (presentation layer) and the technical implementation of the application and infrastructure layers.
+* Encapsulates the business rules and logic of the application
+* Contains all the classes that represent the core domain concepts and entities, such as value objects, entities, and domain services.
+
+[.notes]
+--
+* Deeper explanation
+--
+
+
+== Domain Models
+
+image::model_t_production.png[Ford Model T Production Line, 400, 250]
+
+A model typically represents a real world object that is related to the problem or domain space.
+
+== Domain Entities
+
+image::model_t_production.png[Ford Model T Production Line, 400, 250]
+
+An entity represents a single instance of a model identified with an _id_. Two entities can have all the exact same attributes, distinguishable only by their id.
+
+== !
+For #all# intents and purposes, one Model T is no different from any other except for the serial number.
+
+== Value Objects
+
+_Value objects_ represent a value in the domain, without having a distinct identity.
+
+* They can be comprised of other value objects.
+* They can be comprised of entities.
+* They are used as attributes of entities.
+
+For example, _PersonName_ would be a value object and would be an attribute of Person entity.
+
+[.notes]
+--
+* Show value objects
+--
+
+== Domain services
+_Domain services_ implement *business* logic that is not specific to a particular entity in the domain.
+
+An example could be summing the hours over a given time period.
+
+[.notes]
+--
+* None at present
+--
+[.notes]
+--
+*
+--
+
+
+== Caveats
+
+. The blue and red books are from a largely OO world (and not microservices!)
+. The example application does not implement an Aggregate Root
+
+== !
+[.notes]
+--
+* Domain-Driven Design (the blue book) was published in 2004
+* Implementing Domain Drive Design (the red book) was published in 2013
+--
+
+
+== What Is An Aggregate Root?
+. Acts as a gateway to a cluster of related objects, known as an aggregate.
+. An *aggregate root* typically exists in the Domain top-level folder, as it is a core domain concept.
+. It represents a single unit of change and consistency in the domain model.
+. It also acts as a boundary for the consistency of the aggregate, ensuring that any changes made to the objects within the aggregate are valid according to the business rules.
+. The only object within the aggregate that can be directly accessed.
+. The enforcer of the invariants of the aggregate.
+
+== Example Aggregate Roots
+* E-commerce
+** Aggregate: Order
+** Related object: line items, shipping addresses, payment details...
+* Banking application
+** Aggregate: Account
+** Related objects: transactions, balances, and account holders...
+* Blogging application
+** Aggregate: Post
+** Related objects: comments, categories, tags, and authors...
+* Hotel reservation application
+** Aggregate: Reservation
+** Related objects: room details, guest info, payment details, booking history...
+
+[.notes]
+--
+* TimeTracker does not have a canonical Aggregate.
+* Implications:
+*   Individual objects prevent invalid instantiation
+*   Persistence is handled from the Application layer - some confusion in
+*   resources
+*   Dart does not have a Protected visibility exposing what aggregates are
+*   meant to hide. Could be mitigated through the use of libraries.
+* In TimeTracker the aggregate would likely be TimeEntry.
+* Tempted to name it TimeEntryAggregate
+--
+
+== Conclusions
+* I did not develop from an actual DDD analysis and design
+** Translation feels like it would be better aligned if so
+* Segregating into defined layers
+** Clarified focus achieves cohesion and coupling
+** Revisited layer definitions frequently
+** Stronger understanding of DDD would likely improve results
+* There seemed to be a lot of conflicting information on the web.
+
+[.notes]
+--
+* I would like to discuss with people that are more expert
+* The app will likely be further expanded
+--
+
+== Your Turn
+
+Feedback and questions???
+
+== Acknowledgments and/or List of Contributors
+[.notes]
+--
+* a list of those who contributed to your book in some way or whose help and support you want to publicly acknowledge
+--
+
+. Manoj Sahu
+. Richard Elsberry
+
+
+== Appendix
+[.notes]
+--
+* Supplemental information or documentation to support the content presented.
+* It isn’t essential to the audiences understanding of the material.
+* It’s there to provide a more in-depth look at the topics should they desire.
+--
+
+[cols="1,1"]
+|===
+|https://www.fluttersolution.com/2023/04/understanding-access-modifiers-in-dart.html
+| This page describes how one could implement "package" scope, essential to aggregate roots, by defining a library
+
+|image::Domain-Drive-Design-bookcover.jpg[]
+|Domain Drive Design by Eric Evans
+
+|image::Implementing-Domain-Driven-Design-bookcover.jpg[]
+|Implementing Domain Drive Design
+
+|image::implementing-ddd-cqrs-and-event-sourcing-bookcover.png[]
+|Implementing DDD, CQRS and Event Sourcing
+|===
+
+// .Hands On Domain Driven Design by Michael Plöd
+// image::hands-on-domain-driven-design-by-example-bookcover.png[Hands On Domain Driven Design,300,200]
+
+// == Reference List
+// A list of the sources cited in your book
+
+== Resources
+[cols="1,1"]
+|===
+|This presentation
+|
+
+|The Flutter/Dart demo DDD project1
+|https://github.com/wltiii/time_tracker
+
+|A Java demo DDD project
+|https://github.com/wltiii/shopping_cart_demo
+
+|YouTube
+|Many other good ones from _NDC Conferences_, _GOTO Conferences_ and book authors
+
+|YouTube
+|Domain Driven Design Europe
+|===
+
+== Discussion questions
+[.notes]
+--
+* Thought-provoking questions and prompts about the book, intended for use in an academic context or for book clubs.
+--
+
+== Author
+[.notes]
+--
+* Supplemental information or documentation to support the content presented.
+* This is where the author gives a brief summary of their previous work, education, and personal life (e.g. “She lives in New York with her husband and two Great Danes”). For more on this topic, read through our guide to writing an author bio or check out some stellar About the Author examples.
+--
+
+[cols="1,1"]
+|===
+|Mastodon
+|@worldwidewilly@mastodon.social
+
+|Linkedin
+|https://www.linkedin.com/in/wltiii/
+
+|FIG|DIG Meetup
+|https://www.meetup.com/FIG-DIG-Minneapolis-StPaul-Flutter-Interest-Group/
+
+|FIG|DIG Discord
+|https://discord.gg/DBU4kq2
+|===
+
+== Colophon
+This presentation was written using AsciiDoc (see: https://docs.asciidoctor.org).
+
+The presentation was converted to HTML5 from Asciidoc using asciidoctor-revealjs (see: https://docs.asciidoctor.org/reveal.js-converter/latest/).
