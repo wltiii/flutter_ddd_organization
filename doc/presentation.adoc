@@ -10,38 +10,62 @@ Version 0.1, 04/03/2023
 [quote,Gee Paw Hill (as attributed by Ron Jeffries)]
 I’m in the business of changing code
 
-* The requirement/design/implementation dissonance is a curse.
-* Building applications with a clean, maintainable and extensible architecture is one method for reducing the disconnect.
+== We Have A Problem
 
-== A Simple Time Tracking Project
+Dissonance between business and engineering:
+
+* Different languages
+* Details are lost in translation
+* Us versus Them
+
+== Harm Reduction
+
+Commonly accepted approaches are:
+
+* Easily identifiable/relatable artifacts achieves greater understanding by *all* team members
+* Built in a clean, maintainable and extensible fashion achieves:
+** Better ability to handle requirement changes
+** Speedier corrections to misunderstandings
+
 [.notes]
 --
-* Demonstrate the app
+* We all miscommunicate daily, even with people we know very well
+** Same language used throughout from business to code
+* Business needs change suddenly and often faster than the changes to IT tech - Must be able to handle changes throughout the entire lifespan of an application
 --
+
+== My Domain Driven Design Background
+* I have not used these concepts in a professional project .
+* I have read both the blue and red books, in addition to having read others and watching multiple videos.
+
+[.notes]
+--
+* people state that they really didn't understand DDD until they read the blue book at least three times.
+* I don't proclaim to be an expert.
+* Structured, OO, Functional and Agile practices have provided feedback loops - better code and better understanding
+--
+
+== A Simple Time Tracking Project
 * It allows you to start and stop a timer.
 * Displays a list of entries.
 * If a timer is running, you are not allowed to start another.
 * Conversely, if a timer is not running, you can only start one.
 
+[.notes]
+--
+* Demonstrate the app
+--
+
 == Resocoder's DDD YouTube Video
-* A good introduction to DDD project structure.
+A good introduction to DDD project structure.
 
 [.notes]
 --
-* Mine differs in some ways, chiefly in the enforcement of the invariants.
-* My approach to making invalid state unrepresentable differs.
-* This presentation covers DDD
-concepts more deeply, I believe, though I watched his video long ago.
+* This presentation covers DDD concepts more deeply, I believe, though I watched his video long ago.
+* Just learning Flutter when watched so may have missed the forest for the trees
+* No two coders will write exactly the same code
+* I make use of Type-Driven Design - making invalid state unrepresentable - a different handling of invariants.
 --
-
-== My Domain Driven Design Background
-[.notes]
---
-* people state that they really didn't understand DDD until they read the blue book at least three times.
-* I don't proclaim to be an expert.
---
-* I have not used these concepts in a professional project .
-* I have read both the blue and red books, in addition to having read others and watching multiple videos.
 
 == Key DDD Concepts Applying To Code
 * Naming stemming from the *Ubiquitous Language*
@@ -53,14 +77,11 @@ concepts more deeply, I believe, though I watched his video long ago.
 ...we need to be able to look at the elements of our model and see them as a system. We must not be forced to pick them out of a much larger mix of objects...
 
 == Four Layers
-* Presentation (aka User Interface)
-* Infrastructure
-* Application
-* Domain
+image::ddd-layers.png[]
 
 [.notes]
 --
-* Show project structure in IDE
+* Presentation (known as User Interface in blue book)
 --
 
 == The Presentation Layer
@@ -69,22 +90,22 @@ Responsible for showing information to the user and interpreting the user's comm
 
 == !
 
-Presentation (aka User Interface) layer examples:
-
-. A User Interface
-. A REST API
+image::ddd-presentation-layer.png[]
 
 * Depends on the application layer, but not the other way around.
 * Should be isolated from the technical details of the implementation, such as data access and external services.
 
 [.notes]
 --
-* Show in IDE
+* Presentation layer is aka User Interface layer (archaic?)
+* Examples are: User Interface and REST APIs
 --
 
 == The Infrastructure Layer
 [quote,Eric Evans,Domain-Driven Design]
 Provides generic technical capabilities that support higher layers: message sending for the application, persistence for the domain...
+
+image::ddd-infrastructure-layer.png[]
 
 == !
 Infrastructure layer examples:
@@ -95,7 +116,6 @@ Infrastructure layer examples:
 
 [.notes]
 --
-* Show in IDE
 * How does it depend on the domain layer???
 --
 
@@ -103,17 +123,39 @@ Infrastructure layer examples:
 [quote,Eric Evans,Domain-Driven Design]
 Defines the jobs the software is supposed to do...The layer is kept thin. It does not contain business rules or knowledge, but only coordinates tasks...
 
-== !
-The Application layer
+image::ddd-application-layer.png[]
 
-* Takes requests from the presentation layer and dispatches to the *infrastructure layer* as appropriate.
+== !
+* Dispatches requests from the presentation layer to the *infrastructure layer* as appropriate.
 * Depends on the domain layer.
-* Uses abstractions (interfaces or abstract classes) to maintain loose coupling with the *infrastructure layer*.
+* Provides abstractions (interfaces or abstract classes) to maintain loose coupling with the *infrastructure layer*.
 
 [.notes]
 --
-* Show in IDE
 * These amount to usecases
+--
+
+== The Application Repositories Layer
+image::ddd-application-repository-layer.png[]
+
+== !
+* Provides abstractions (interfaces or abstract classes) to maintain loose coupling with the *infrastructure layer*.
+
+[.notes]
+--
+*
+--
+
+== The Application Usecase Layer
+
+image::ddd-application-usecases-layer.png[]
+
+== !
+* Implements abstractions to maintain loose coupling with the *domain layer*.
+
+[.notes]
+--
+*
 --
 
 == The Domain Layer
