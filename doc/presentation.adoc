@@ -22,8 +22,8 @@ Dissonance between business and engineering:
 
 Commonly accepted approaches are:
 
-* Easily identifiable/relatable artifacts achieves greater understanding by *all* team members
-* Built in a clean, maintainable and extensible fashion achieves:
+* Easily identifiable/relatable artifacts for greater understanding by *all* team members
+* Build in a clean, maintainable and extensible fashion achieves:
 ** Better ability to handle requirement changes
 ** Speedier corrections to misunderstandings
 
@@ -34,15 +34,31 @@ Commonly accepted approaches are:
 * Business needs change suddenly and often faster than the changes to IT tech - Must be able to handle changes throughout the entire lifespan of an application
 --
 
+== Caveats
+
+. The blue and red books are from a largely OO world predating microservices
+. At odds with Agile?
+. The example application does not implement an Aggregate Root
+
+[.notes]
+--
+* Domain-Driven Design (the blue book) was published in 2004
+* Implementing Domain Drive Design (the red book) was published in 2013
+* There was resistance by some in Agile to anything that seemed like BDUP, drawing diagrams, etc.
+* Some stated it was only applicable to large projects
+* I will talk more about Aggregate Roots later
+--
+
 == My Domain Driven Design Background
-* I have not used these concepts in a professional project .
+* I have not used these concepts in a professional project.
 * I have read both the blue and red books, in addition to having read others and watching multiple videos.
 
 [.notes]
 --
-* people state that they really didn't understand DDD until they read the blue book at least three times.
+* People state that they really didn't understand DDD until they read the blue book at least three times.
 * I don't proclaim to be an expert.
-* Structured, OO, Functional and Agile practices have provided feedback loops - better code and better understanding
+* Structured, OO, Functional and Agile practices have provided feedback loops between code, design and requirements.
+* Studying DDD has, like other learnings, improved my understanding across many software development concerns.
 --
 
 == A Simple Time Tracking Project
@@ -69,19 +85,22 @@ A good introduction to DDD project structure.
 
 == Key DDD Concepts Applying To Code
 * Naming stemming from the *Ubiquitous Language*
-* Invariants managed in domains (DDD says *Aggregate Root*)
+* Invariants managed in domains (DDD says within the *Aggregate Root*)
 * High cohesion and minimal coupling via well-defined layers
 
 == Layers
 [quote,Eric Evans,Domain-Driven Design]
 ...we need to be able to look at the elements of our model and see them as a system. We must not be forced to pick them out of a much larger mix of objects...
 
-== Four Layers
+== Four Top Level Layers
 image::ddd-layers.png[]
 
 [.notes]
 --
-* Presentation (known as User Interface in blue book)
+* Presentation
+* Infrastructure
+* Application
+* Domain (most importantly!)
 --
 
 == The Presentation Layer
@@ -105,10 +124,8 @@ image::ddd-presentation-layer.png[]
 [quote,Eric Evans,Domain-Driven Design]
 Provides generic technical capabilities that support higher layers: message sending for the application, persistence for the domain...
 
-image::ddd-infrastructure-layer.png[]
-
 == !
-Infrastructure layer examples:
+image::ddd-infrastructure-layer.png[]
 
 * Services calling REST api's or cloud services.
 * Services for storing/retrieving data in a database.
@@ -116,51 +133,55 @@ Infrastructure layer examples:
 
 [.notes]
 --
-* How does it depend on the domain layer???
+* The repository is obvious from the above definition.
+* Firestore provider makes sense. Time entry list provider should be elsewhere perhaps. Feedback welcome!
 --
 
 == The Application Layer
 [quote,Eric Evans,Domain-Driven Design]
-Defines the jobs the software is supposed to do...The layer is kept thin. It does not contain business rules or knowledge, but only coordinates tasks...
-
-image::ddd-application-layer.png[]
+Defines the jobs the software is supposed to do...The layer is kept thin. *It does not contain business rules or knowledge, but only coordinates tasks*...
 
 == !
-* Dispatches requests from the presentation layer to the *infrastructure layer* as appropriate.
+image::ddd-application-layer.png[]
+
+* Dispatches requests from the *presentation layer* to the *infrastructure layer* as appropriate.
 * Depends on the domain layer.
 * Provides abstractions (interfaces or abstract classes) to maintain loose coupling with the *infrastructure layer*.
 
 [.notes]
 --
-* These amount to usecases
+* These amount to the usecases of the application
+* Usecases can be defined in the domain layer as well, if specific to that domain
+* Services make up logic used across usecases.
+* There are no services in the project.
 --
 
 == The Application Repositories Layer
-image::ddd-application-repository-layer.png[]
 
-== !
-* Provides abstractions (interfaces or abstract classes) to maintain loose coupling with the *infrastructure layer*.
+Provides abstractions (interfaces or abstract classes) to maintaining coupling with the *infrastructure layer*.
+
+image::ddd-application-repository-layer.png[]
 
 [.notes]
 --
-*
+* I could see having a STORE layer that would be specific to a given repository. That would simplify changing from one storage service to another.
 --
 
 == The Application Usecase Layer
 
+Implements the abstractions to maintain loose coupling with the *domain layer*.
+
 image::ddd-application-usecases-layer.png[]
 
-== !
-* Implements abstractions to maintain loose coupling with the *domain layer*.
 
 [.notes]
 --
-*
+* Maintains loose coupling with the *domain layer*.
 --
 
 == The Domain Layer
 [quote,Eric Evans,Domain-Driven Design]
-Responsible for representing concepts or the business, information about the business situation, and business rules... *This layer is the heart of business software.*
+Responsible for representing concepts of the business, information about the business situation, and business rules... *This layer is the heart of business software.*
 
 == !
 [quote,Eric Evans,Domain-Driven Design]
@@ -169,46 +190,66 @@ Concentrate all the code related to the domain model in one layer and isolate it
 == !
 The Domain layer
 
-* Must be independent of the user interface (presentation layer) and the technical implementation of the application and infrastructure layers.
-* Encapsulates the business rules and logic of the application
-* Contains all the classes that represent the core domain concepts and entities, such as value objects, entities, and domain services.
+* Represents the core domain concepts
+* Independent of the presentation layer, application and infrastructure layers
 
 [.notes]
 --
-* Deeper explanation???
+* Contains all the classes that represent the core domain concepts and entities, such as value objects, entities, and domain services.
+* Encapsulates the business rules and logic of the application
+* Must be independent of the user interface (presentation layer) and the technical implementation of the application and infrastructure layers.
 --
 
 
 == Domain Models
+[quote,Henry Ford]
+Any customer can have a car painted any color that he wants so long as it is black
 
 image::model_t_production.png[Ford Model T Production Line, 400, 250]
 
-A model typically represents a real world object that is related to the problem or domain space.
+Represent real world object that are related to the problem/domain space.
+
+[.notes]
+--
+* Models are templates that are potential entities
+* Two models having the same value for all attributes are equal
+--
+
 
 == Domain Entities
 
-image::model_t_production.png[Ford Model T Production Line, 400, 250]
+image::1925-ford-model-t-with-license.jpg[Licensed Ford Model T, 400, 250]
 
-An entity represents a single instance of a model identified with an _id_. Two entities can have all the exact same attributes, distinguishable only by their id.
+An entity represents a single instance of a model distinguished by an identifier.
+
+[.notes]
+--
+* Note the license plate as an identifier
+--
 
 == !
 image::model_t_production.png[Ford Model T Production Line, 400, 250]
 
-For #all# intents and purposes, one Model T is no different from any other except for the serial number.
+*For all intents and purposes*, one Model T is no different from any other except for the serial number.
+
+[.notes]
+--
+* I wrap models with entities giving it an ID. The entity provides little else of value except convenience methods.
+* Doing this makes some other functions cleaner. For example, *Add* functions do not need an entity, thus no need for a nullable ID.
+--
 
 == Value Objects
 
 _Value objects_ represent a value in the domain, without having a distinct identity.
 
-* They can be comprised of other value objects.
-* They can be comprised of entities.
-* They are used as attributes of entities.
-
-For example, _PersonName_ would be a value object and would be an attribute of Person entity.
+image::ddd-domain-layer-usecase-value-objects.png[]
 
 [.notes]
 --
-* Show value objects
+* Models and Value Objects differ in that models are templates for entities, whereas Value Objects are not.
+* Value objects can be comprised of other value objects, models or entities.
+* They are used as attributes of entities, models and other value objects.
+* For example, value object _StartTime_ is an attribute of both TimeEntryModel and TimeEntryRange value object
 --
 
 == Domain services
@@ -218,34 +259,22 @@ An example could be summing the hours over a given time period.
 
 [.notes]
 --
-* None at present
+* I had no need at present in this project.
+* I prefer a more OO approach, keeping functions and data together, but sometimes that is pretty ugly and this separation is better.
 --
-[.notes]
---
-*
---
-
-
-== Caveats
-
-. The blue and red books are from a largely OO world (and not microservices!)
-. The example application does not implement an Aggregate Root
-
-== !
-[.notes]
---
-* Domain-Driven Design (the blue book) was published in 2004
-* Implementing Domain Drive Design (the red book) was published in 2013
---
-
 
 == What Is An Aggregate Root?
-. Acts as a gateway to a cluster of related objects, known as an aggregate.
-. An *aggregate root* typically exists in the Domain top-level folder, as it is a core domain concept.
-. It represents a single unit of change and consistency in the domain model.
-. It also acts as a boundary for the consistency of the aggregate, ensuring that any changes made to the objects within the aggregate are valid according to the business rules.
-. The only object within the aggregate that can be directly accessed.
-. The enforcer of the invariants of the aggregate.
+* A gateway to a cluster of related objects, known as an aggregate.
+* A single unit of change and consistency in the domain model.
+* Ensures that changes made to the objects within the aggregate are valid according to the business rules.
+* Typically exists in the Domain top-level folder, as it is a core domain concept.
+
+[.notes]
+--
+* The only object within the aggregate that can be directly accessed.
+* The enforcer of the invariants of the aggregate.
+* For example: folder time_entries is a cluster of related objects. That folder could be hidden with only a publicly exposed TimeEntriesAggregate class.
+--
 
 == Example Aggregate Roots
 * E-commerce
@@ -254,6 +283,8 @@ An example could be summing the hours over a given time period.
 * Banking application
 ** Aggregate: Account
 ** Related objects: transactions, balances, and account holders...
+
+== !
 * Blogging application
 ** Aggregate: Post
 ** Related objects: comments, categories, tags, and authors...
@@ -278,7 +309,7 @@ An example could be summing the hours over a given time period.
 * Should improve communication with end users, analysts, architects, etc.
 * Great separation of concerns, improved cohesion and coupling
 * Developing from an actual DDD analysis and design might have lead to better alignment
-* Revisited layer definitions frequently
+* I needed to revisit layer definitions frequently.
 * There seemed to be a lot of conflicting information on the web
 
 [.notes]
@@ -310,19 +341,13 @@ Feedback and questions???
 * It’s there to provide a more in-depth look at the topics should they desire.
 --
 
-[cols="1,1"]
+[cols="1a,1"]
 |===
-|https://www.fluttersolution.com/2023/04/understanding-access-modifiers-in-dart.html
-| This page describes how one could implement "package" scope, essential to aggregate roots, by defining a library
-
-|image::Domain-Drive-Design-bookcover.jpg[]
+|image::Domain-Drive-Design-bookcover.jpg[Domain Drive Design, 162, 218]
 |Domain Drive Design by Eric Evans
 
-|image::Implementing-Domain-Driven-Design-bookcover.jpg[]
+|image::Implementing-Domain-Driven-Design-bookcover.jpg[Implementing Domain Drive Design, 162, 218]
 |Implementing Domain Drive Design
-
-|image::implementing-ddd-cqrs-and-event-sourcing-bookcover.png[]
-|Implementing DDD, CQRS and Event Sourcing
 |===
 
 // .Hands On Domain Driven Design by Michael Plöd
@@ -332,23 +357,15 @@ Feedback and questions???
 // A list of the sources cited in your book
 
 == Resources
-[cols="1,1"]
+[cols="1"]
 |===
-|This presentation
-|https://github.com/wltiii/flutter_ddd_organization
+|This presentation: https://github.com/wltiii/flutter_ddd_organization
 
-|The Flutter/Dart demo DDD project
-|https://github.com/wltiii/time_tracker
+|The Flutter/Dart demo DDD project: https://github.com/wltiii/time_tracker
 
-|A Java demo DDD project
-|https://github.com/wltiii/shopping_cart_demo
+|A Java demo DDD project: https://github.com/wltiii/shopping_cart_demo
 
-
-|YouTube
-|Domain Driven Design Europe
-
-|YouTube
-|Many other good ones from _NDC Conferences_, _GOTO Conferences_ and book authors
+|YouTube: Domain Driven Design Europe, NDC Conferences, GOTO Conferences, authors
 |===
 
 == Discussion questions
@@ -366,17 +383,13 @@ Feedback and questions???
 
 [cols="1,1"]
 |===
-|Mastodon
-|@worldwidewilly@mastodon.social
+|Mastodon: @worldwidewilly@mastodon.social
 
-|Linkedin
-|https://www.linkedin.com/in/wltiii/
+|Linkedin: https://www.linkedin.com/in/wltiii/
 
-|FIG|DIG Meetup
-|https://www.meetup.com/FIG-DIG-Minneapolis-StPaul-Flutter-Interest-Group/
+|FIG/DIG Meetup: https://www.meetup.com/FIG-DIG-Minneapolis-StPaul-Flutter-Interest-Group/
 
-|FIG|DIG Discord
-|https://discord.gg/DBU4kq2
+|FIG/DIG Discord: https://discord.gg/DBU4kq2
 |===
 
 == Colophon
